@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#673AB7"
+    android:foregroundTint="#009688"
+    tools:context=".MainActivity">
+
+    <EditText
+        android:id="@+id/passwordBox"
+        android:layout_width="234dp"
+        android:layout_height="51dp"
+        android:layout_marginTop="212dp"
+        android:backgroundTint="#FFFFFF"
+        android:hint="Password"
+        android:textColor="#FFFDFD"
+        android:textColorHighlight="#FBF9F9"
+        android:textColorHint="#FFFFFF"
+        android:textColorLink="#FFFCFC"
+        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.514"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/HeadingSignIn"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <EditText
+        android:id="@+id/usernameBox"
+        android:layout_width="229dp"
+        android:layout_height="51dp"
+        android:backgroundTint="#FFFFFF"
+        android:hint="Username"
+        android:textColor="#FFFDFD"
+        android:textColorHighlight="#FBF9F9"
+        android:textColorHint="#FFFFFF"
+        android:textColorLink="#FFFCFC"
+        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/HeadingSignIn" />
+
+    <TextView
+        android:id="@+id/OrLoginWith"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="124dp"
+        android:foregroundTint="#FAFAFA"
+        android:text="or login with"
+        android:textColor="#FFFDFD"
+        android:textSize="13sp"
+        app:fontVariationSettings="199"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button" />
+
+    <TextView
+        android:id="@+id/forgotPassword2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:foregroundTint="#FAFAFA"
+        android:text="Forgotton Password?"
+        android:textColor="#FFFDFD"
+        android:textSize="13sp"
+        app:fontVariationSettings="199"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="324dp"
+        android:backgroundTint="#420BA3"
+        android:text="Login"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/HeadingSignIn" />
+
+    <EditText
+        android:id="@+id/editTextTextMultiLine"
+        android:layout_width="152dp"
+        android:layout_height="43dp"
+        android:backgroundTint="#E8DEDE"
+        android:ems="10"
+        android:gravity="start|top"
+        android:inputType="textMultiLine"
+        app:layout_constraintBottom_toTopOf="@+id/usernameBox"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.375" />
+
+    <TextView
+        android:id="@+id/HeadingSignIn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:fontFamily="sans-serif-medium"
+        android:foregroundTint="#9C27B0"
+        android:text="Sign In"
+        android:textColor="#D5C8ED"
+        android:textSize="32sp"
+        app:fontVariationSettings="199"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.474"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
