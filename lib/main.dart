@@ -1,165 +1,98 @@
 import 'package:flutter/material.dart';
+import 'create_account.dart';
+import 'Interface_screen.dart';
 
-void main() => runApp(const MyApp());
+void main() {
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key});
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Facebook Clone',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: SignInSignUpScreen(),
-    );
-  }
-}
-
-class SignInSignUpScreen extends StatefulWidget {
-  @override
-  _SignInSignUpScreenState createState() => _SignInSignUpScreenState();
-}
-
-class _SignInSignUpScreenState extends State<SignInSignUpScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              height: 100.0,
-              decoration: BoxDecoration(
-                color: Color(0xFF4A90E2), // Use a lighter blue color
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(20.0),
-                  bottomRight: Radius.circular(20.0),
+      navigatorKey: navigatorKey,
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Facebook-Login'),
+        ),
+        body: Center(
+          child: Container(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.facebook,
+                  size: 40.0,
+                  color: Colors.blue,
                 ),
-              ),
-              child: Center(
-                child: Text(
-                  'Welcome To Facebook Clone',
+                Text(
+                  'Facebook-Clone',
                   style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
+                    fontSize: 30.0,
+                    fontWeight: FontWeight.w900,
                   ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SignInScreen()),
-                  );
-                },
-                style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all(
-                      Size(50, 36)), 
+                SizedBox(height: 16.0),
+                EmailTextBox(),
+                SizedBox(height: 16.0),
+                PasswordTextBox(),
+                SizedBox(height: 16.0),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: InkWell(
+                    onTap: () {
+                      try {
+                        navigatorKey.currentState!.pushNamed('/createAccount');
+                      } catch (e) {
+                        print('Error navigating to Create Account: $e');
+                      }
+                    },
+                    child: Text(
+                      'Create Account',
+                      style: TextStyle(
+                        color: Colors.blue,
+                        fontSize: 16.0,
+                      ),
+                    ),
+                  ),
                 ),
-                child: Text('Sign In'),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SignUpScreen()),
-                  );
-                },
-                style: ButtonStyle(
-                  minimumSize: MaterialStateProperty.all(
-                      Size(50, 36)),
+                SizedBox(height: 16.0),
+                ElevatedButton(
+                  onPressed: () {
+                    try {
+                      navigatorKey.currentState!.pushNamed('/interface');
+                    } catch (e) {
+                      print('Error navigating to Interface: $e');
+                      // Handle the error or log it
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.white,
+                    side: BorderSide(
+                      color: Colors.blue,
+                      width: 2.0,
+                    ),
+                  ),
+                  child: Text(
+                    'Login',
+                    style: TextStyle(
+                      color: Colors.blue,
+                    ),
+                  ),
                 ),
-                child: Text('Sign Up'),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
-    );
-  }
-}
-
-class SignInScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Sign In'),
-      ),
-      backgroundColor:
-          Colors.white, // Set the background color for the sign-in screen
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextField(
-              decoration: InputDecoration(labelText: 'Email'),
-            ),
-            SizedBox(height: 16.0),
-            TextField(
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            SizedBox(height: 32.0),
-            ElevatedButton(
-              onPressed: () {
-                // Perform sign-in logic here
-              },
-              child: Text('Sign In'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class SignUpScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Sign Up'),
-      ),
-      backgroundColor:
-          Colors.white, // Set the background color for the sign-up screen
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextField(
-              decoration: InputDecoration(labelText: 'Full Name'),
-            ),
-            SizedBox(height: 16.0),
-            TextField(
-              decoration: InputDecoration(labelText: 'Email'),
-            ),
-            SizedBox(height: 16.0),
-            TextField(
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            SizedBox(height: 32.0),
-            ElevatedButton(
-              onPressed: () {},
-              child: Text('Sign Up'),
-            ),
-          ],
-        ),
-      ),
+      routes: {
+        '/createAccount': (context) => CreateAccountScreen(),
+        '/interface': (context) => Interface(),
+      },
     );
   }
 }
