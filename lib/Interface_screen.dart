@@ -6,7 +6,6 @@ class Friend {
 
   Friend({required this.name, required this.profilePicture});
 }
-
 class Interface extends StatelessWidget {
   final List<Friend> friends = [
     Friend(name: 'Abdullah', profilePicture: 'assets/im/abd.jpeg'),
@@ -16,7 +15,6 @@ class Interface extends StatelessWidget {
     Friend(name: 'Saad Akbar', profilePicture: 'assets/im/saad.jpeg'),
     Friend(name: 'Syed Faraz', profilePicture: 'assets/im/faraz.jpeg'),
   ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +24,7 @@ class Interface extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.search),
             onPressed: () {
-              // Add your search functionality here
+              
             },
           ),
         ],
@@ -43,7 +41,7 @@ class Interface extends StatelessWidget {
             trailing: IconButton(
               icon: Icon(Icons.delete),
               onPressed: () {
-                // Add your delete functionality here
+                
               },
             ),
           );

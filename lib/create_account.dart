@@ -1,7 +1,14 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'configuration.dart';
 
 class CreateAccountScreen extends StatelessWidget {
-   @override
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -27,17 +34,22 @@ class CreateAccountScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 16.0),
-              NameTextBox(),
+              NameTextBox(controller: nameController),
               SizedBox(height: 16.0),
-              EmailTextBox(),
+              EmailTextBox(controller: emailController),
               SizedBox(height: 16.0),
-              PasswordTextBox(),
+              PasswordTextBox(controller: passwordController),
               SizedBox(height: 16.0),
-              ConfirmPasswordBox(),
+              ConfirmPasswordBox(controller: passwordController),
               SizedBox(height: 16.0),
-              ElevatedButton( 
+              ElevatedButton(
                 onPressed: () {
-                  displayMessage(context, 'Account has been created');
+                  String name = nameController.text;
+                  String email = emailController.text;
+                  String password = passwordController.text;
+                  registerUser(name, email, password);
+                  displayMessage(context,
+                      'Account has been created $name, $email, $password');
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Colors.white,
@@ -64,15 +76,20 @@ class CreateAccountScreen extends StatelessWidget {
 void displayMessage(BuildContext context, String message) {
   final snackBar = SnackBar(
     content: Text(message),
-    duration: Duration(seconds: 2), 
+    duration: Duration(seconds: 2),
   );
   ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }
 
 class NameTextBox extends StatelessWidget {
+  final TextEditingController controller;
+
+  NameTextBox({required this.controller});
+
   @override
   Widget build(BuildContext context) {
     return TextField(
+      controller: controller,
       keyboardType: TextInputType.emailAddress,
       decoration: InputDecoration(
         hintText: 'Enter your Name',
@@ -85,10 +102,16 @@ class NameTextBox extends StatelessWidget {
     );
   }
 }
+
 class EmailTextBox extends StatelessWidget {
+  final TextEditingController controller;
+
+  EmailTextBox({required this.controller});
+
   @override
   Widget build(BuildContext context) {
     return TextField(
+      controller: controller,
       keyboardType: TextInputType.emailAddress,
       decoration: InputDecoration(
         hintText: 'Enter your Email',
@@ -101,14 +124,20 @@ class EmailTextBox extends StatelessWidget {
     );
   }
 }
+
 class PasswordTextBox extends StatelessWidget {
+  final TextEditingController controller;
+
+  PasswordTextBox({required this.controller});
+
   @override
   Widget build(BuildContext context) {
     return TextField(
+      controller: controller,
       keyboardType: TextInputType.visiblePassword,
       decoration: InputDecoration(
         hintText: 'Enter your Password',
-        labelText: 'Passowrd',
+        labelText: 'Password',
         prefixIcon: Icon(Icons.person),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
@@ -117,18 +146,21 @@ class PasswordTextBox extends StatelessWidget {
     );
   }
 }
+
 class ConfirmPasswordBox extends StatefulWidget {
+  final TextEditingController controller;
+
+  ConfirmPasswordBox({required this.controller});
+
   @override
   _ConfirmPasswordBoxState createState() => _ConfirmPasswordBoxState();
 }
 
 class _ConfirmPasswordBoxState extends State<ConfirmPasswordBox> {
-  TextEditingController _passwordController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     return TextField(
-      controller: _passwordController, 
+      controller: widget.controller,
       keyboardType: TextInputType.visiblePassword,
       decoration: InputDecoration(
         hintText: 'Enter your Password',
@@ -142,6 +174,27 @@ class _ConfirmPasswordBoxState extends State<ConfirmPasswordBox> {
   }
 
   String getPassword() {
-    return _passwordController.text;
+    return widget.controller.text;
+  }
+}
+
+void registerUser(String name, String email, String password) async {
+  try {
+    var regBody = {
+      "name": name,
+      "email": email,
+      "password": password
+    };
+    var response = await http.post(
+      Uri.parse('http://192.168.100.228:3000/registration'),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(regBody),
+    );
+
+    // Handle the response here
+    print("Response status: ${response.statusCode}");
+    print("Response body: ${response.body}");
+  } catch (e) {
+    print("Error: $e");
   }
 }

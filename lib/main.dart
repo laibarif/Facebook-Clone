@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'create_account.dart';
 import 'Interface_screen.dart';
+import 'profile.dart';
 
 void main() {
   runApp(MyApp());
@@ -8,6 +9,8 @@ void main() {
 
 class MyApp extends StatelessWidget {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -37,10 +40,10 @@ class MyApp extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 16.0),
-                EmailTextBox(),
-                SizedBox(height: 16.0),
-                PasswordTextBox(),
-                SizedBox(height: 16.0),
+              EmailTextBox(controller: emailController),
+              SizedBox(height: 16.0),
+              PasswordTextBox(controller: passwordController),
+              SizedBox(height: 16.0),
                 Align(
                   alignment: Alignment.centerRight,
                   child: InkWell(
@@ -64,10 +67,9 @@ class MyApp extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () {
                     try {
-                      navigatorKey.currentState!.pushNamed('/interface');
+                      navigatorKey.currentState!.pushNamed('/profile');
                     } catch (e) {
                       print('Error navigating to Interface: $e');
-                      // Handle the error or log it
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -92,6 +94,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/createAccount': (context) => CreateAccountScreen(),
         '/interface': (context) => Interface(),
+        '/profile': (context) => ProfilePage(),
       },
     );
   }
