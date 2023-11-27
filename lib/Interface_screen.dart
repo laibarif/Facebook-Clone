@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
+import 'profile.dart';
 
-class Friend {
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+class Post {
+  final String content;
+
+  Post({required this.content});
+}
+
+class User {
   final String name;
   final String profilePicture;
 
-  Friend({required this.name, required this.profilePicture});
+  User({required this.name, required this.profilePicture});
 }
 
 class Interface extends StatefulWidget {
@@ -15,14 +24,31 @@ class Interface extends StatefulWidget {
 class _InterfaceState extends State<Interface> {
   bool isDarkTheme = false;
 
-  final List<Friend> friends = [
-    Friend(name: 'Abdullah', profilePicture: 'assets/im/abd.jpeg'),
-    Friend(name: 'Muaaz', profilePicture: 'assets/im/muaaz.jpeg'),
-    Friend(name: 'Abu Bakar', profilePicture: 'assets/im/abd.jpeg'),
-    Friend(name: 'Umair Bhai', profilePicture: 'assets/im/umair.jpeg'),
-    Friend(name: 'Saad Akbar', profilePicture: 'assets/im/saad.jpeg'),
-    Friend(name: 'Syed Faraz', profilePicture: 'assets/im/faraz.jpeg'),
-  ];
+  final List<Post> posts = [];
+
+  User? loggedInUser; // User who is currently logged in
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the logged-in user
+    loggedInUser =
+        User(name: 'Abdullah', profilePicture: 'assets/im/abd.jpeg');
+  }
+
+  void _showPosts() {
+    // Implement the logic to fetch user-specific posts
+    // For now, let's add some dummy posts
+    setState(() {
+      posts.add(Post(content: 'This is a new post.'));
+      posts.add(Post(content: 'Another post here.'));
+    });
+  }
+
+  void _navigateToProfile() {
+    navigatorKey.currentState!.pushNamed('/profile');
+    print('Navigate to Profile');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,31 +56,39 @@ class _InterfaceState extends State<Interface> {
       theme: isDarkTheme ? ThemeData.dark() : ThemeData.light(),
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Home'),
+          title: loggedInUser != null
+              ? Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundImage:
+                          AssetImage(loggedInUser!.profilePicture),
+                    ),
+                    SizedBox(width: 8.0),
+                    Text(loggedInUser!.name),
+                  ],
+                )
+              : Text('Home'),
           actions: [
             IconButton(
               icon: Icon(Icons.search),
               onPressed: () {
-                // Implement search functionality
+                
               },
             ),
             IconButton(
               icon: Icon(Icons.message),
-              onPressed: () {
-                // Implement message functionality
-              },
+              onPressed: () {},
             ),
             IconButton(
               icon: Icon(Icons.logout),
               onPressed: () {
-                // Implement logout and switch to main functionality
+                Navigator.pop(context);
               },
             ),
           ],
         ),
         body: Column(
           children: [
-            // Type box and post button
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
@@ -68,14 +102,16 @@ class _InterfaceState extends State<Interface> {
                   ),
                   IconButton(
                     icon: Icon(Icons.attach_file),
-                    onPressed: () {
-                      // Implement file selection functionality
-                    },
+                    onPressed: () {},
                   ),
                   IconButton(
                     icon: Icon(Icons.send),
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.post_add),
                     onPressed: () {
-                      // Implement post functionality
+                      _showPosts();
                     },
                   ),
                 ],
@@ -85,41 +121,35 @@ class _InterfaceState extends State<Interface> {
             SizedBox(height: 16.0),
             // Free space for posts
             Expanded(
-              child: ListView.builder(
-                itemCount: friends.length,
-                itemBuilder: (context, index) {
-                  final friend = friends[index];
-                  return ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage: AssetImage(friend.profilePicture),
-                    ),
-                    title: Text(friend.name),
-                    trailing: IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () {
-                        // Implement delete functionality
+              child: posts.isNotEmpty
+                  ? ListView.builder(
+                      itemCount: posts.length,
+                      itemBuilder: (context, index) {
+                        final post = posts[index];
+                        return ListTile(
+                          title: Text(post.content),
+                        );
                       },
+                    )
+                  : Center(
+                      child: Text('No posts yet.'),
                     ),
-                  );
-                },
-              ),
             ),
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            // Implement post action
-          },
-          child: Icon(Icons.add),
+          onPressed: _navigateToProfile,
+          child: Icon(Icons.person),
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
         bottomNavigationBar: BottomAppBar(
           shape: CircularNotchedRectangle(),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
-                icon: Icon(isDarkTheme ? Icons.light_mode : Icons.dark_mode),
+                icon: Icon(
+                    isDarkTheme ? Icons.light_mode : Icons.dark_mode),
                 onPressed: () {
                   setState(() {
                     isDarkTheme = !isDarkTheme;
@@ -130,10 +160,9 @@ class _InterfaceState extends State<Interface> {
           ),
         ),
       ),
+       routes: {
+        '/profile': (context) => ProfilePage(),
+      },
     );
   }
-}
-
-void main() {
-  runApp(Interface());
 }
