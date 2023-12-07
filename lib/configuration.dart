@@ -1,0 +1,1 @@
+final regUrl =  'http://192.168.100.228:3000/registration';
