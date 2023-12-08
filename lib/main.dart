@@ -2,13 +2,18 @@ import 'package:flutter/material.dart';
 import 'create_account.dart';
 import 'Interface_screen.dart';
 import 'profile.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+bool flag = true;
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
@@ -40,10 +45,10 @@ class MyApp extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 16.0),
-              EmailTextBox(controller: emailController),
-              SizedBox(height: 16.0),
-              PasswordTextBox(controller: passwordController),
-              SizedBox(height: 16.0),
+                EmailTextBox(controller: emailController),
+                SizedBox(height: 16.0),
+                PasswordTextBox(controller: passwordController),
+                SizedBox(height: 16.0),
                 Align(
                   alignment: Alignment.centerRight,
                   child: InkWell(
@@ -66,10 +71,9 @@ class MyApp extends StatelessWidget {
                 SizedBox(height: 16.0),
                 ElevatedButton(
                   onPressed: () {
-                    try {
-                      navigatorKey.currentState!.pushNamed('/profile');
-                    } catch (e) {
-                      print('Error navigating to Interface: $e');
+                    LoginUser(emailController.text, passwordController.text);
+                    if(!flag){
+                      displayMessage(context, "Invalid Username or Password");
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -93,9 +97,35 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         '/createAccount': (context) => CreateAccountScreen(),
-        '/interface': (context) => Interface(),
+        '/interface': (context) => Interface(myToken: 'yourTokenValue'),
         '/profile': (context) => ProfilePage(),
       },
     );
+  }
+}
+
+void LoginUser(String email, password) async {
+  try {
+    var regBody = {"email": email, "password": password};
+    var response = await http.post(
+      Uri.parse('http://localhost:3000/api/login'),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(regBody),
+    );
+
+    var jsonResponse = jsonDecode(response.body);
+    if (jsonResponse['status']) {
+      var myToken = jsonResponse['token'];
+      try {
+        navigatorKey.currentState!.pushNamed('/interface', arguments: myToken);
+      } catch (e) {
+        print('Error navigating to Interface: $e');
+      }
+    }
+    else{
+      flag = false;
+    }
+  } catch (e) {
+    print("error: $e");
   }
 }

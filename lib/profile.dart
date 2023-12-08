@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'privacy.dart';
+
 
 class Post {
   final String profilePic;
@@ -16,7 +18,9 @@ class Post {
   });
 }
 
+
 class PostWidget extends StatelessWidget {
+  
   final Post post = Post(
     profilePic: "assets/im/abd.jpeg",
     name: "Abdullah Mazher",
@@ -49,7 +53,7 @@ class PostWidget extends StatelessWidget {
           post.im,
           fit: BoxFit.cover,
           width: double.infinity,
-          height: 200.0, // Adjust the height as needed
+          height: 200.0,
         ),
         SizedBox(height: 16.0),
         Row(
@@ -88,11 +92,13 @@ class IconWithText extends StatelessWidget {
 }
 
 class Profile {
-  final String name;
-  final String bio;
-  final String profilePic;
+  String password;
+  String name;
+  String bio;
+  String profilePic;
 
   Profile({
+    required this.password,
     required this.name,
     required this.bio,
     required this.profilePic,
@@ -100,7 +106,8 @@ class Profile {
 }
 
 class ProfilePage extends StatelessWidget {
-  final Profile userProfile = Profile(
+  Profile userProfile = Profile(
+    password: "password",
     name: "Abdullah Mazher",
     bio: "Flutter Developer",
     profilePic: "assets/im/abd.jpeg",
@@ -148,16 +155,27 @@ class ProfilePage extends StatelessWidget {
                     },
                   ),
                   ProfileIcon(
-                    icon: Icons.privacy_tip,
-                    label: 'Privacy',
-                    onClick: () {
-                    },
-                  ),
-                  ProfileIcon(
                     icon: Icons.person,
                     label: 'Profile',
                     onClick: () {
-                      // Add your onClick logic for 'Profile' here 
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PrivacyPage(
+                            userProfile: userProfile,
+                            onSave: (Profile updatedProfile) {
+                              userProfile = updatedProfile;
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  ProfileIcon(
+                    icon: Icons.privacy_tip,
+                    label: 'Privacy',
+                    onClick: () {
+                      // Add your onClick logic for 'Profile' here
                     },
                   ),
                 ],

@@ -2,8 +2,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'configuration.dart';
+import 'BL.dart';
 
+
+List<Profile> userList = [];
 class CreateAccountScreen extends StatelessWidget {
+  
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -114,8 +118,8 @@ class EmailTextBox extends StatelessWidget {
       controller: controller,
       keyboardType: TextInputType.emailAddress,
       decoration: InputDecoration(
-        hintText: 'Enter your Email',
-        labelText: 'Email',
+        hintText: 'Enter your Username',
+        labelText: 'Username',
         prefixIcon: Icon(Icons.person),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
@@ -180,20 +184,24 @@ class _ConfirmPasswordBoxState extends State<ConfirmPasswordBox> {
 
 void registerUser(String name, String email, String password) async {
   try {
-    var regBody = {
-      "name": name,
-      "email": email,
-      "password": password
-    };
+    var regBody = {"name": name, "email": email, "password": password};
     var response = await http.post(
-      Uri.parse('http://192.168.100.228:3000/registration'),
+      Uri.parse('http://localhost:3000/api/registration'),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(regBody),
     );
 
-    // Handle the response here
+    // Handle the response 
     print("Response status: ${response.statusCode}");
     print("Response body: ${response.body}");
+    final Profile User = Profile(
+      myname: "$name",
+      myemail: "$email",
+      mypassword: "$password",
+      mybio: "Flutter Developer",
+      mypic: " ",
+    );
+    userList.add(User);
   } catch (e) {
     print("Error: $e");
   }

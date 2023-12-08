@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'profile.dart';
+import 'chats.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
-
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 class Post {
   final String content;
 
@@ -17,51 +17,121 @@ class User {
 }
 
 class Interface extends StatefulWidget {
+  final String myToken;
+
+  Interface({required this.myToken});
+
   @override
   _InterfaceState createState() => _InterfaceState();
 }
 
 class _InterfaceState extends State<Interface> {
-  bool isDarkTheme = false;
-
+  late String name;
+  late String email;
+  late String id;
+  late User? loggedInUser;
   final List<Post> posts = [];
-
-  User? loggedInUser; // User who is currently logged in
+  TextEditingController _textEditingController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    // Initialize the logged-in user
-    loggedInUser =
-        User(name: 'Abdullah', profilePicture: 'assets/im/abd.jpeg');
+
+    // Decode the token and extract information
+    try {
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(widget.myToken);
+      email = decodedToken['email'];
+      name = decodedToken['name'];
+      id = decodedToken['_id'];
+
+      // Initialize loggedInUser
+      loggedInUser = User(name: '$name', profilePicture: 'assets/im/abd.jpeg');
+    } catch (e) {
+      print('Error decoding token: $e');
+    }
   }
 
-  void _showPosts() {
-    // Implement the logic to fetch user-specific posts
-    // For now, let's add some dummy posts
-    setState(() {
-      posts.add(Post(content: 'This is a new post.'));
-      posts.add(Post(content: 'Another post here.'));
-    });
+  void _showOptionsMenu() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          child: ListView(
+            shrinkWrap: true,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  'Menu',
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              _buildOptionItem(Icons.event, 'Events', Colors.blue),
+              _buildOptionItem(Icons.group, 'Groups', Colors.green),
+              _buildOptionItem(Icons.chat, 'Chats', Colors.orange),
+              _buildOptionItem(Icons.people, 'Friends', Colors.purple),
+              _buildOptionItem(Icons.group, 'Users', Colors.teal),
+              _buildOptionItem(Icons.email, 'Email', Colors.red),
+              _buildOptionItem(Icons.person, 'Profile', Colors.indigo),
+              _buildOptionItem(Icons.logout, 'Logout', Colors.red),
+            ],
+          ),
+        );
+      },
+    );
   }
 
-  void _navigateToProfile() {
-    navigatorKey.currentState!.pushNamed('/profile');
-    print('Navigate to Profile');
+  Widget _buildOptionItem(IconData icon, String label, Color color) {
+    return ListTile(
+      leading: Icon(icon, color: color),
+      title: Text(
+        label,
+        style: TextStyle(color: color),
+      ),
+      onTap: () {
+        Navigator.pop(context);
+        if (label == "Logout") {}
+        if (label == "Profile") {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ProfilePage()),
+          );
+        }
+        if (label == "Chats") {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Mychats()),
+          );
+        }
+        if (label == "Users") {}
+      },
+    );
+  }
+
+  void _postMessage() {
+    String enteredText = _textEditingController.text;
+    if (enteredText.isNotEmpty) {
+      setState(() {
+        posts.add(Post(content: enteredText));
+        _textEditingController.clear();
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: isDarkTheme ? ThemeData.dark() : ThemeData.light(),
       home: Scaffold(
         appBar: AppBar(
           title: loggedInUser != null
               ? Row(
                   children: [
                     CircleAvatar(
-                      backgroundImage:
-                          AssetImage(loggedInUser!.profilePicture),
+                      backgroundImage: AssetImage(loggedInUser!.profilePicture),
                     ),
                     SizedBox(width: 8.0),
                     Text(loggedInUser!.name),
@@ -70,9 +140,9 @@ class _InterfaceState extends State<Interface> {
               : Text('Home'),
           actions: [
             IconButton(
-              icon: Icon(Icons.search),
+              icon: Icon(Icons.menu),
               onPressed: () {
-                
+                _showOptionsMenu();
               },
             ),
             IconButton(
@@ -95,6 +165,7 @@ class _InterfaceState extends State<Interface> {
                 children: [
                   Expanded(
                     child: TextField(
+                      controller: _textEditingController,
                       decoration: InputDecoration(
                         hintText: 'Type something...',
                       ),
@@ -102,32 +173,83 @@ class _InterfaceState extends State<Interface> {
                   ),
                   IconButton(
                     icon: Icon(Icons.attach_file),
-                    onPressed: () {},
+                    onPressed: () {
+                      //call the function here
+                    },
                   ),
                   IconButton(
                     icon: Icon(Icons.send),
-                    onPressed: () {},
+                    onPressed: _postMessage,
                   ),
                   IconButton(
                     icon: Icon(Icons.post_add),
-                    onPressed: () {
-                      _showPosts();
-                    },
+                    onPressed: () {},
                   ),
                 ],
               ),
             ),
-            // Additional space above and below the free space for posts
             SizedBox(height: 16.0),
-            // Free space for posts
             Expanded(
               child: posts.isNotEmpty
-                  ? ListView.builder(
+                  ? ListView.separated(
                       itemCount: posts.length,
+                      separatorBuilder: (context, index) =>
+                          SizedBox(height: 16.0),
                       itemBuilder: (context, index) {
                         final post = posts[index];
-                        return ListTile(
-                          title: Text(post.content),
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                SizedBox(width: 10),
+                                CircleAvatar(
+                                  backgroundImage:
+                                      AssetImage(loggedInUser!.profilePicture),
+                                ),
+                                SizedBox(width: 10),
+                                Column(children: [
+                                  Text(loggedInUser!.name),
+                                  SizedBox(height: 2),
+                                  Text(
+                                    getTimeAgo(DateTime.now()),
+                                    style: TextStyle(
+                                      fontSize: 10.0,
+                                      fontWeight: FontWeight.w100,
+                                    ),
+                                  ),
+                                ])
+                              ],
+                            ),
+                            SizedBox(height: 10),
+                            Container(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(post.content),
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                _buildHoverableIcon(Icons.thumb_up, 'Like'),
+                                _buildHoverableIcon(Icons.comment, 'Comment'),
+                                _buildHoverableIcon(Icons.share, 'Share'),
+                              ],
+                            ),
+                            SizedBox(height: 4),
+                            Row(
+                              children: [
+                                SizedBox(width: 10),
+                                Text(
+                                  'View Comments',
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontStyle: FontStyle.normal,
+                                  ),
+                                ),
+                              ],
+                            )
+                          ],
                         );
                       },
                     )
@@ -138,31 +260,58 @@ class _InterfaceState extends State<Interface> {
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: _navigateToProfile,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ProfilePage()),
+            );
+          },
           child: Icon(Icons.person),
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-        bottomNavigationBar: BottomAppBar(
-          shape: CircularNotchedRectangle(),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                icon: Icon(
-                    isDarkTheme ? Icons.light_mode : Icons.dark_mode),
-                onPressed: () {
-                  setState(() {
-                    isDarkTheme = !isDarkTheme;
-                  });
-                },
-              ),
-            ],
-          ),
+      ),
+    );
+  }
+
+  Widget _buildHoverableIcon(IconData icon, String label) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 200),
+        padding: EdgeInsets.all(8.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8.0),
+          color: Colors.transparent,
+        ),
+        child: IconWithText(
+          icon: icon,
+          label: label,
         ),
       ),
-       routes: {
-        '/profile': (context) => ProfilePage(),
+      onEnter: (_) {
+        setState(() {
+          // Adjust your hover state changes here
+        });
+      },
+      onExit: (_) {
+        setState(() {
+          // Adjust your hover state changes here
+        });
       },
     );
+  }
+}
+
+String getTimeAgo(DateTime postTime) {
+  DateTime currentTime = DateTime.now();
+  Duration difference = currentTime.difference(postTime);
+
+  if (difference.inDays > 0) {
+    return '${difference.inDays}d ago';
+  } else if (difference.inHours > 0) {
+    return '${difference.inHours}h ago';
+  } else if (difference.inMinutes > 0) {
+    return '${difference.inMinutes}m ago';
+  } else {
+    return 'Just now';
   }
 }
